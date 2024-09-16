@@ -26,13 +26,15 @@
                             {% endif %}
                         </p>
                         <div class="card-text-content">
-                            <p class="card-text">
-                                {% if service.link %}
+                            {% if service.link %}
+                                <p class="card-text">
                                     <a href="{{ service.link }}" target="_blank">{{ service.description }}</a>
-                                {% else %}
-                                    {{ service.description }}
-                                {% endif %}
-                            </p>
+                                </p>
+                            {% else %}
+                                <p class="card-text">
+                                    {{ service.description | safe }}
+                                </p>
+                            {% endif %}
                         </div>
                         {% if service.last_updated %}
                         <p class="last-updated">Last Updated: {{ service.last_updated }}</p>

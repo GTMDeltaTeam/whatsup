@@ -1,5 +1,3 @@
-import os
-
 from flask import Flask, render_template
 import feedparser
 import requests
@@ -7,6 +5,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import os
 import logging
+import bleach
 
 app = Flask(__name__)
 
@@ -14,16 +13,30 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Define allowed tags and attributes for bleach
+allowed_tags = bleach.sanitizer.ALLOWED_TAGS.union(['p', 'br', 'ul', 'li', 'strong', 'em', 'a'])
+allowed_attributes = {
+    'a': ['href', 'title', 'target'],
+    'img': ['src', 'alt']
+}
+
 def fetch_openai_status():
     try:
         feed = feedparser.parse('https://status.openai.com/history.rss')
         if feed.entries:
             entry = feed.entries[0]
             last_updated = datetime(*entry.published_parsed[:6]).strftime('%Y-%m-%d %H:%M:%S')
+            # Sanitize the description
+            sanitized_description = bleach.clean(
+                entry.summary,
+                tags=allowed_tags,
+                attributes=allowed_attributes,
+                strip=True
+            )
             return {
                 'name': 'OpenAI',
                 'status': entry.title,
-                'description': entry.summary,
+                'description': sanitized_description,
                 'last_updated': last_updated
             }
         else:
@@ -48,16 +61,38 @@ def fetch_aws_status():
         if feed.entries:
             entry = feed.entries[0]
             status = entry.title
-            description = entry.summary
+            # Sanitize the description
+            sanitized_description = bleach.clean(
+                entry.summary,
+                tags=allowed_tags,
+                attributes=allowed_attributes,
+                strip=True
+            )
             last_updated = datetime(*entry.published_parsed[:6]).strftime('%Y-%m-%d %H:%M:%S')
+            return {
+                'name': 'AWS',
+                'status': status,
+                'description': sanitized_description,
+                'last_updated': last_updated
+            }
         else:
             status = "Operational"
-            description = "All systems normal."
+            sanitized_description = "All systems normal."
             last_updated = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        return {'name': 'AWS', 'status': status, 'description': description, 'last_updated': last_updated}
+            return {
+                'name': 'AWS',
+                'status': status,
+                'description': sanitized_description,
+                'last_updated': last_updated
+            }
     except Exception as e:
         logger.error(f"Error fetching AWS status: {e}")
-        return {'name': 'AWS', 'status': 'Unknown', 'description': f'Error: {e}', 'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+        return {
+            'name': 'AWS',
+            'status': 'Unknown',
+            'description': f'Error: {e}',
+            'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
 
 def fetch_hubspot_status():
     try:
@@ -65,12 +100,34 @@ def fetch_hubspot_status():
         if feed.entries:
             entry = feed.entries[0]
             last_updated = datetime(*entry.published_parsed[:6]).strftime('%Y-%m-%d %H:%M:%S')
-            return {'name': 'HubSpot', 'status': entry.title, 'description': entry.summary, 'last_updated': last_updated}
+            # Sanitize the description
+            sanitized_description = bleach.clean(
+                entry.summary,
+                tags=allowed_tags,
+                attributes=allowed_attributes,
+                strip=True
+            )
+            return {
+                'name': 'HubSpot',
+                'status': entry.title,
+                'description': sanitized_description,
+                'last_updated': last_updated
+            }
         else:
-            return {'name': 'HubSpot', 'status': 'Operational', 'description': 'All systems normal.', 'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+            return {
+                'name': 'HubSpot',
+                'status': 'Operational',
+                'description': 'All systems normal.',
+                'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
     except Exception as e:
         logger.error(f"Error fetching HubSpot status: {e}")
-        return {'name': 'HubSpot', 'status': 'Unknown', 'description': f'Error: {e}', 'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+        return {
+            'name': 'HubSpot',
+            'status': 'Unknown',
+            'description': f'Error: {e}',
+            'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
 
 def fetch_heroku_status():
     try:
@@ -78,16 +135,37 @@ def fetch_heroku_status():
         if feed.entries:
             entry = feed.entries[0]
             last_updated = datetime(*entry.published_parsed[:6]).strftime('%Y-%m-%d %H:%M:%S')
-            return {'name': 'Heroku', 'status': entry.title, 'description': entry.summary, 'last_updated': last_updated}
+            # Sanitize the description
+            sanitized_description = bleach.clean(
+                entry.summary,
+                tags=allowed_tags,
+                attributes=allowed_attributes,
+                strip=True
+            )
+            return {
+                'name': 'Heroku',
+                'status': entry.title,
+                'description': sanitized_description,
+                'last_updated': last_updated
+            }
         else:
-            return {'name': 'Heroku', 'status': 'Operational', 'description': 'All systems normal.', 'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+            return {
+                'name': 'Heroku',
+                'status': 'Operational',
+                'description': 'All systems normal.',
+                'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
     except Exception as e:
         logger.error(f"Error fetching Heroku status: {e}")
-        return {'name': 'Heroku', 'status': 'Unknown', 'description': f'Error: {e}', 'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+        return {
+            'name': 'Heroku',
+            'status': 'Unknown',
+            'description': f'Error fetching status: {e}',
+            'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
 
 def fetch_gmail_status():
-    # Since scraping Google's status page may violate their terms of service,
-    # we'll provide a link to their status dashboard instead.
+    # Since we provide a link, no change needed
     return {
         'name': 'Gmail',
         'status': 'See Status Page',
@@ -98,18 +176,34 @@ def fetch_gmail_status():
 
 def fetch_kinsta_status():
     try:
-        response = requests.get('https://status.kinsta.com/')
-        soup = BeautifulSoup(response.content, 'html.parser')
-        status_element = soup.find('span', class_='page-status-indicator-status')
-        status = status_element.text.strip() if status_element else "Unknown"
-        description_element = soup.find('div', class_='actual-status-description')
-        description = description_element.text.strip() if description_element else "No description available."
-        return {
-            'name': 'Kinsta',
-            'status': status,
-            'description': description,
-            'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        }
+        feed = feedparser.parse('https://status.kinsta.com/history.rss')
+        if feed.entries:
+            entry = feed.entries[0]
+            status = entry.title
+            # Sanitize the description
+            sanitized_description = bleach.clean(
+                entry.summary,
+                tags=allowed_tags,
+                attributes=allowed_attributes,
+                strip=True
+            )
+            last_updated = datetime(*entry.published_parsed[:6]).strftime('%Y-%m-%d %H:%M:%S')
+            return {
+                'name': 'Kinsta',
+                'status': status,
+                'description': sanitized_description,
+                'last_updated': last_updated
+            }
+        else:
+            status = "Operational"
+            sanitized_description = "All systems normal."
+            last_updated = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            return {
+                'name': 'Kinsta',
+                'status': status,
+                'description': sanitized_description,
+                'last_updated': last_updated
+            }
     except Exception as e:
         logger.error(f"Error fetching Kinsta status: {e}")
         return {
@@ -121,21 +215,34 @@ def fetch_kinsta_status():
 
 def fetch_canva_status():
     try:
-        response = requests.get('https://canvastatus.com/')
-        soup = BeautifulSoup(response.content, 'html.parser')
-        status_element = soup.find('div', class_='page-status')
-        if status_element:
-            status = status_element.find('span').text.strip()
-            description = status_element.find('p').text.strip()
+        feed = feedparser.parse('https://www.canvastatus.com/history.rss')
+        if feed.entries:
+            entry = feed.entries[0]
+            status = entry.title
+            # Sanitize the description
+            sanitized_description = bleach.clean(
+                entry.summary,
+                tags=allowed_tags,
+                attributes=allowed_attributes,
+                strip=True
+            )
+            last_updated = datetime(*entry.published_parsed[:6]).strftime('%Y-%m-%d %H:%M:%S')
+            return {
+                'name': 'Canva',
+                'status': status,
+                'description': sanitized_description,
+                'last_updated': last_updated
+            }
         else:
             status = "Operational"
-            description = "All systems normal."
-        return {
-            'name': 'Canva',
-            'status': status,
-            'description': description,
-            'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        }
+            sanitized_description = "All systems normal."
+            last_updated = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            return {
+                'name': 'Canva',
+                'status': status,
+                'description': sanitized_description,
+                'last_updated': last_updated
+            }
     except Exception as e:
         logger.error(f"Error fetching Canva status: {e}")
         return {
@@ -151,12 +258,34 @@ def fetch_webflow_status():
         if feed.entries:
             entry = feed.entries[0]
             last_updated = datetime(*entry.published_parsed[:6]).strftime('%Y-%m-%d %H:%M:%S')
-            return {'name': 'Webflow', 'status': entry.title, 'description': entry.summary, 'last_updated': last_updated}
+            # Sanitize the description
+            sanitized_description = bleach.clean(
+                entry.summary,
+                tags=allowed_tags,
+                attributes=allowed_attributes,
+                strip=True
+            )
+            return {
+                'name': 'Webflow',
+                'status': entry.title,
+                'description': sanitized_description,
+                'last_updated': last_updated
+            }
         else:
-            return {'name': 'Webflow', 'status': 'Operational', 'description': 'All systems normal.', 'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+            return {
+                'name': 'Webflow',
+                'status': 'Operational',
+                'description': 'All systems normal.',
+                'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
     except Exception as e:
         logger.error(f"Error fetching Webflow status: {e}")
-        return {'name': 'Webflow', 'status': 'Unknown', 'description': f'Error: {e}', 'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+        return {
+            'name': 'Webflow',
+            'status': 'Unknown',
+            'description': f'Error: {e}',
+            'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
 
 def get_all_statuses():
     services = []
@@ -176,5 +305,5 @@ def index():
     return render_template('index.html', services=services)
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 3002))
+    port = int(os.environ.get('PORT', 4002))
     app.run(debug=True, host='0.0.0.0', port=port)
