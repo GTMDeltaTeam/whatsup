@@ -34,7 +34,7 @@ Before we dive in, make sure you've got the following set up:
    Open up your terminal and run:
 
    ```bash
-   git clone https://github.com/yourusername/whats-up-dashboard.git
+   git clone https://github.com/GTMDeltaTeam/whats-up-dashboard.git
    cd whats-up-dashboard
    ```
 
