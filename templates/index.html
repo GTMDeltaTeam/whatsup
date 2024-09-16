@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Existing head content -->
     <meta charset="UTF-8">
     <title>What's Up? - Service Status Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
@@ -20,13 +19,17 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ service.name }}</h5>
                         <p class="card-text">
-                            <span class="badge {% if 'Operational' in service.status % or 'All systems normal' in service.status %}bg-success{% else %}bg-danger{% endif %}">
-                                {{ service.status }}
-                            </span>
+                            {% if 'Operational' in service.status or 'All systems normal' in service.status or 'See Status Page' in service.status %}
+                                <span class="badge bg-success">{{ service.status }}</span>
+                            {% else %}
+                                <span class="badge bg-danger">{{ service.status }}</span>
+                            {% endif %}
                         </p>
                         <div class="card-text-content">
                             <p class="card-text">
-                                {% if service.description %}
+                                {% if service.link %}
+                                    <a href="{{ service.link }}" target="_blank">{{ service.description }}</a>
+                                {% else %}
                                     {{ service.description }}
                                 {% endif %}
                             </p>
@@ -42,7 +45,7 @@
     </div>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS -->
+    <!-- Custom JS (if any) -->
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>
