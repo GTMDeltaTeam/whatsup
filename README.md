@@ -185,9 +185,9 @@ This project is licensed under the **MIT License**. Feel free to use it as you s
 
 Have questions, suggestions, or just want to say hi? Feel free to reach out!
 
-- **Email:** [youremail@example.com](mailto:eric@gtmdelta.com)
-- **Twitter:** [@yourhandle](https://twitter.com/DiscoPosse)
-- **Website:** [Your Awesome Site](https://gtmdelta.com)
+- **Email:** [eric@gtmdelta.com](mailto:eric@gtmdelta.com)
+- **Twitter:** [@DiscoPosse](https://twitter.com/DiscoPosse)
+- **Website:** [https://gtmdelta.com](https://gtmdelta.com)
 
 ---
 
