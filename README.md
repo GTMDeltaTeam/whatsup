@@ -2,7 +2,7 @@
 
 Hey there! Welcome to **What's Up?**, your friendly neighborhood dashboard that keeps tabs on the status of all your favorite services like OpenAI, AWS, HubSpot, Heroku, Gmail, Kinsta, Canva, and Webflow. If you're tired of jumping between different status pages, this app is about to make your life a whole lot easier.
 
-![alt text](https://github.com/GTMDeltaTeam/whatsup/blob/main/static/images/.jpg/whatsup-screen.png?raw=true)
+![alt text](https://github.com/GTMDeltaTeam/whatsup/blob/main/static/images/whatsup-screen.png?raw=true)
 
 ## Table of Contents
 
