@@ -214,15 +214,6 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
 ```
-
-#### **c. Git Initialization**
-
-```bash
-git init
-git add .
-git commit -m "Initial commit of What's Up? dashboard"
-```
-
 ### **2. Deploying the App**
 
 #### **a. Login to Heroku**
