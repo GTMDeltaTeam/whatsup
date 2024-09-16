@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Existing head content -->
     <meta charset="UTF-8">
     <title>What's Up? - Service Status Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
@@ -18,22 +19,24 @@
                 <div class="card mb-4 shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title">{{ service.name }}</h5>
-                        {% if service.link %}
-                            <p class="card-text">
-                                <a href="{{ service.link }}" target="_blank">{{ service.status }}</a>
-                            </p>
-                        {% else %}
-                            <p class="card-text">{{ service.status }}</p>
-                        {% endif %}
                         <p class="card-text">
-                            <span class="badge {% if 'Operational' in service.status %}bg-success{% else %}bg-danger{% endif %}">
+                            <span class="badge {% if 'Operational' in service.status % or 'All systems normal' in service.status %}bg-success{% else %}bg-danger{% endif %}">
                                 {{ service.status }}
                             </span>
                         </p>
-                        <p class="card-text"><small>{{ service.description }}</small></p>
+                        <div class="card-text-content">
+                            <p class="card-text">
+                                {% if service.description %}
+                                    {{ service.description }}
+                                {% endif %}
+                            </p>
+                        </div>
+                        {% if service.last_updated %}
+                        <p class="last-updated">Last Updated: {{ service.last_updated }}</p>
+                        {% endif %}
                     </div>
                 </div>
-            </div>            
+            </div>
             {% endfor %}
         </div>
     </div>

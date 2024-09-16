@@ -7,3 +7,45 @@ h1 {
 .badge {
     font-size: 1em;
 }
+/* Set a fixed height for all cards */
+.card {
+    height: 350px; /* Adjust the height as needed */
+    overflow: hidden;
+}
+
+/* Use Flexbox to arrange content vertically */
+.card-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Content area that will scroll if content overflows */
+.card-text-content {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 0.5rem;
+}
+
+/* Style for the last updated text */
+.last-updated {
+    margin-top: auto;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.card-text-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.card-text-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.card-text-content::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+.card-text-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
