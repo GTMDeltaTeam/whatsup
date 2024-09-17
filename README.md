@@ -4,6 +4,8 @@ Hey there! Welcome to **What's Up?**, your friendly neighborhood dashboard that 
 
 ![alt text](https://github.com/GTMDeltaTeam/whatsup/blob/main/static/images/whatsup-screen.png?raw=true)
 
+Here is the live version: [GTM Delta Vendor Dashboard - What's Up](https://whatsup.gtmdelta.com/)
+
 ## Table of Contents
 
 - [Getting Started](#getting-started)
